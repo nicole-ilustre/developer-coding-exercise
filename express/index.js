@@ -1,35 +1,35 @@
 const express = require('express')
 const { getTopWords } = require('./utils/tags')
 const app = express()
-const rootPostDir = './server/assets/posts'
+const rootPostDir = '../assets/posts'
+const fs = require('fs')
+const path = require('path')
 
-/**
- *  Returns the detail of an individual post in json, formatted as:
- * {
- *  post: {
- *    content: <article's markdown content>,
- *    tags: <array of 5 top tags for the post>
- *  }
- * }
- */
+
+ app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.get('/post/:slug', function (req, res) {
-  // ... fill in your own code ...
+  const { slug } = req.params
+   fs.readFile(path.join(rootPostDir, slug), 'utf8', function (err, data) {
+     if(err) {
+       throw err
+     }
+     const post = {
+       content: data,
+       tags: getTopWords(data)
+     }
+     res.json(post)
+   })
 })
 
-/**
- * Returns a json array of all posts, formatted as:
- * [
- *  {
- *    title: <article's title>,
- *    slug: <article's slug>
- *  },
- *  ...
- * ]
- */
 app.get('/posts', function (req, res) {
-  // ... fill in you own code ...
+  const blogTitles = fs.readdirSync(rootPostDir)
+  res.json(blogTitles)
 })
 
-app.listen(3000, function () {
+app.listen(5000, function () {
   console.log('Dev app listening on port 3000!')
 })

@@ -29,8 +29,34 @@ const stopWords = [
  * @param {number} tagCount
  * @returns {[string]} - An array of the most frequently used non-Stopwords
  */
-function getTopWords (bodyText, tagCount = 5) {
-  // Write your own implementation
+function getTopWords (bodyText) {
+  const bodyTextArray = bodyText.split(' ')
+  let counts = {}
+  let topWords = []
+
+  for(let i = 0; i<bodyTextArray.length; i++){
+    let word = bodyTextArray[i]
+    if (counts[word] === undefined) {
+      counts[word] = 1
+    } else {
+      counts[word]++
+    }
+  }
+
+  const wordsAndCounts = Object.entries(counts).sort((a, b) => {
+    const aVal = a[1]
+    const bVal = b[1]
+    return bVal - aVal
+  })
+
+  for(let i = 0; topWords.length < 5; i++) {
+    let isStopWord = stopWords.find(word => word == wordsAndCounts[i][0])
+    if(isStopWord == undefined) {
+      topWords.push(wordsAndCounts[i][0])
+    } 
+  }
+
+  return (topWords)
 }
 
 module.exports = { getTopWords }
